@@ -1,0 +1,56 @@
+.home-page {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tiffin-form .form-group {
+  margin-bottom: 15px;
+}
+
+.tiffin-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.tiffin-form input,
+.tiffin-form textarea,
+.tiffin-form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.tiffin-form textarea {
+  height: 80px;
+  resize: none;
+}
+
+.tiffin-form .error {
+  color: red;
+  font-size: 14px;
+}
+
+
+@media (hover:none) {
+  button:hover {
+    background-color: blue;
+  }
+}
+
+.success {
+  color: green;
+  font-size: 16px;
+  margin-top: 15px;
+  text-align: center;
+}
