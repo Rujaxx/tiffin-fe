@@ -21,7 +21,7 @@ const ScrollToTopButton = ({ show }) => {
 const AssignRiderButton = ({ count, handleOnClick }) => {
     return (
         <button onClick={handleOnClick} className="assign-rider-button">
-          Assign Rider ({count})
+            Assign Rider ({count})
         </button>
     );
 };
@@ -49,6 +49,7 @@ const RiderPopup = ({ show, onClose, onAssign, riderName, setRiderName }) => {
 
 
 const AdminTable = () => {
+    const token = localStorage.getItem("token");
     const [search, setSearch] = useState("");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -63,7 +64,7 @@ const AdminTable = () => {
         handleAssignRider();
         setShowPopup(false);
         setSelectAll(false);
-        setSelectedItems([]);        
+        setSelectedItems([]);
     }
     const onClose = () => {
         setShowPopup(false);
@@ -74,12 +75,10 @@ const AdminTable = () => {
     }
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (!token) {
             navigate("/login"); // Redirect to login page if token is not present
         }
         const fetchData = async () => {
-            console.log("Fetching data...");
             try {
                 const response = await fetch("https://tiffin-be.onrender.com/deliveries", {
                     headers: {
@@ -135,11 +134,11 @@ const AdminTable = () => {
             item.address?.toLowerCase().includes(search.toLowerCase()) ||
             item.fullName?.toLowerCase().includes(search.toLowerCase()) ||
             item.mobileNumber?.toLowerCase().includes(search.toLowerCase()) ||
-            item.kitchen?.toLowerCase().includes(search.toLowerCase()) 
+            item.kitchen?.toLowerCase().includes(search.toLowerCase())
     ).sort((a, b) => {
         if (a.riderName && !b.riderName) {  // Sort by rider name
             return 1;  // a comes first
-        } else{
+        } else {
             return -1
         }
     });
@@ -168,7 +167,6 @@ const AdminTable = () => {
 
 
     const handleAssignRider = async () => {
-        const token = localStorage.getItem("token");
         if (!token) {
             navigate("/login");
             return;
@@ -189,9 +187,9 @@ const AdminTable = () => {
             let status = response.ok
             response = await response.json();
             if (status) {
-                if(riderName === "") {
+                if (riderName === "") {
                     alert("Rider removed successfully");
-                }else{
+                } else {
                     alert("Rider assigned successfully");
                 }
                 // Optionally, you can refresh the data or clear the selected items
@@ -201,7 +199,7 @@ const AdminTable = () => {
                 let mappedData = new Map(deliveries.map((item) => [item._id, item]));
                 setData((prevData) => {
                     return prevData.map((item) => {
-                        if(mappedData.has(item._id)) {
+                        if (mappedData.has(item._id)) {
                             return {
                                 ...item,
                                 riderName: riderName
@@ -212,7 +210,7 @@ const AdminTable = () => {
                     })
                 });
             } else {
-                if(response?.message && response.message === "jwt expired") {
+                if (response?.message && response.message === "jwt expired") {
                     navigate("/login");
                 }
                 console.error("Failed to assign rider");
@@ -222,6 +220,41 @@ const AdminTable = () => {
         }
     };
 
+
+    const handleExportPDF = async () => {
+        try {
+            alert("Please wait, your file is being downloaded...");
+            const response = await fetch("https://tiffin-be.onrender.com/export-pdf", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    data: filteredData,
+                }),
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "exported_data.pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url); // Clean up the URL object
+            } else {
+                alert("Failed to download PDF");
+
+                console.error("Failed to export PDF");
+            }
+        } catch (error) {
+            alert("Failed to download PDF");
+            console.error("Error exporting PDF:", error);
+        }
+    };
 
     return (
         <div>
@@ -241,21 +274,23 @@ const AdminTable = () => {
                     ></input>
                     <label>Select All</label>
                 </div>
-                {
-                    selectedItems.length > 0 && (
-                        <AssignRiderButton count={selectedItems.length} handleOnClick={handleOnClick} />
-                    )
-                }
-                {
-                    show && (<RiderPopup
+                {selectedItems.length > 0 && (
+                    <AssignRiderButton count={selectedItems.length} handleOnClick={handleOnClick} />
+                )}
+                {show && (
+                    <RiderPopup
                         show={show}
                         onClose={onClose}
                         onAssign={onAssign}
                         riderName={riderName}
                         setRiderName={setRiderName}
-                    />)
-                }
+                    />
+                )}
+                <button onClick={handleExportPDF} className="export-pdf-button">
+                    Export PDF
+                </button>
             </div>
+
             <div className="admin-table-container">
                 <div className="table-cards">
                     {filteredData.map((item, index) => (

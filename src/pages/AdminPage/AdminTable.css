@@ -60,7 +60,8 @@
     color: white;
     position: absolute;
     right: 10px;
-    top: 10px; /* Adjust this value as needed to position it vertically within the parent */
+    top: 10px;
+    /* Adjust this value as needed to position it vertically within the parent */
 }
 
 
@@ -92,8 +93,17 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    height: 50px; /* Set a fixed height */
-    overflow: hidden; /* Ensure content overflow is hidden */
+    height: 50px;
+    /* Set a fixed height */
+    overflow: hidden;
+    /* Ensure content overflow is hidden */
+}
+
+.export-pdf-button {
+    color: #000;
+    margin: 10px;
+    padding: 10px;
+    font-size: medium;
 }
 
 .modal {
